@@ -9,13 +9,16 @@ def run_server():
 
         server.bind(server_address)
 
-        server.listen(0)
+        server.listen(1)
         print(f"Servidor escuchando {server_address[0]}:{server_address[1]}")
 
         client_socket, client_address = server.accept()
 
         with client_socket:
             print(f"Conexion aceptada con {client_address[0]}:{client_address[1]}")
+            user = client_socket.recv(1024)
+            user = user.decode("utf-8")
+            print(user)
             while True:            
                 request = client_socket.recv(1024)
                 request = request.decode("utf-8")
@@ -24,7 +27,7 @@ def run_server():
                     client_socket.send("closed".encode("utf-8"))
                     break
 
-                print(f"mensaje: {request}")
+                print(f"{user}: {request}")
 
                 response = "recibido".encode("utf-8")
                 client_socket.send(response)
