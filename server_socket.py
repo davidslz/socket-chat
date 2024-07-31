@@ -1,4 +1,22 @@
 import socket
+import threading
+
+def client_conecction(client_socket, client_address):
+    user = client_socket.recv(1024)
+    user = user.decode("utf-8")
+    print(f"Conexion aceptada con usuario {user} <{client_address[0]}:{client_address[1]}>")
+    while True:            
+        request = client_socket.recv(1024)
+        request = request.decode("utf-8")
+            
+        if request.lower() == "end":
+            client_socket.send("closed".encode("utf-8"))
+            break
+
+        print(f"{user}: {request}")
+
+        response = "recibido".encode("utf-8")
+        client_socket.send(response)
 
 def run_server():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
@@ -9,29 +27,15 @@ def run_server():
 
         server.bind(server_address)
 
-        server.listen(1)
+        server.listen(0)
         print(f"Servidor escuchando {server_address[0]}:{server_address[1]}")
 
-        client_socket, client_address = server.accept()
+        while True: 
+            client_socket, client_address = server.accept() 
 
-        with client_socket:
-            print(f"Conexion aceptada con {client_address[0]}:{client_address[1]}")
-            user = client_socket.recv(1024)
-            user = user.decode("utf-8")
-            print(user)
-            while True:            
-                request = client_socket.recv(1024)
-                request = request.decode("utf-8")
+            thread = threading.Thread(target=client_conecction, args=(client_socket,client_address))
+            thread.start()
 
-                if request.lower() == "end":
-                    client_socket.send("closed".encode("utf-8"))
-                    break
-
-                print(f"{user}: {request}")
-
-                response = "recibido".encode("utf-8")
-                client_socket.send(response)
-    
     print("conexion terminada")
 
 
