@@ -2,7 +2,7 @@ import socket
 import threading
 
 clientes = 0
-
+users = {}
 
 def client_conecction(client_socket, client_address):
     nickname = client_socket.recv(1024)
@@ -10,13 +10,14 @@ def client_conecction(client_socket, client_address):
     #print(f"Conexion aceptada con usuario {nickname} <{client_address[0]}:{client_address[1]}>")
     global clientes
     clientes += 1
-    users = {}
+    global users
 
     usuario = "user" + str(clientes)
 
     users[usuario]= {'name' : nickname,'address' : client_address[0],'port' : client_address[1]}
 
-    print("nueva conexion con:  ",users[usuario]['name'],users[usuario]['address'],users[usuario]['port'])
+    #print("nueva conexion con:  ",users[usuario]['name'],users[usuario]['address'],users[usuario]['port'])
+    print(users.items())
 
     while True:            
         request = client_socket.recv(1024)
