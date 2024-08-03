@@ -1,10 +1,23 @@
 import socket
 import threading
 
+clientes = 0
+
+
 def client_conecction(client_socket, client_address):
-    user = client_socket.recv(1024)
-    user = user.decode("utf-8")
-    print(f"Conexion aceptada con usuario {user} <{client_address[0]}:{client_address[1]}>")
+    nickname = client_socket.recv(1024)
+    nickname = nickname.decode("utf-8")
+    #print(f"Conexion aceptada con usuario {nickname} <{client_address[0]}:{client_address[1]}>")
+    global clientes
+    clientes += 1
+    users = {}
+
+    usuario = "user" + str(clientes)
+
+    users[usuario]= {'name' : nickname,'address' : client_address[0],'port' : client_address[1]}
+
+    print("nueva conexion con:  ",users[usuario]['name'],users[usuario]['address'],users[usuario]['port'])
+
     while True:            
         request = client_socket.recv(1024)
         request = request.decode("utf-8")
@@ -13,7 +26,7 @@ def client_conecction(client_socket, client_address):
             client_socket.send("closed".encode("utf-8"))
             break
 
-        print(f"{user}: {request}")
+        print(f"{nickname}: {request}")
 
         response = "recibido".encode("utf-8")
         client_socket.send(response)
